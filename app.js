@@ -79,7 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!csvUrl.startsWith('http')) {
             csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pub?output=csv`;
         }
-        fetch(csvUrl)
+        // Add a timestamp cache-buster to prevent aggressive caching on mobile/Instagram browsers
+        const cacheBusterUrl = csvUrl + (csvUrl.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+        fetch(cacheBusterUrl)
             .then(res => {
                 if (!res.ok) throw new Error("Spreadsheet response was not ok");
                 return res.text();
