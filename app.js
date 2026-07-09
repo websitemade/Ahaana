@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Column A: Title | Column B: Subtitle | Column C: URL | Column D: Icon
     // Share the Sheet: File -> Share -> Publish to web (Choose Entire Document and CSV)
     // Paste your Google Sheet ID here (the long string between /d/ and /edit in the URL)
-    const SPREADSHEET_ID = '1V4jl-e1huS0YS9eicqlmLCFVGu68JNoB5nDDu35pp8A';
+    const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSO4BS_4rHY2EAn69ryepTtLP4VPei-BazLiiezATCyGzs2yyEqKwhiuoiPxhJiEGZToFnL-u5SogQg/pub?output=csv';
 
     // ----------------------------------------------------
     // 2. Default Data Config (Local Fallback)
@@ -75,7 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     if (SPREADSHEET_ID) {
         // Fetch published Google Sheet as CSV
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pub?output=csv`;
+        let csvUrl = SPREADSHEET_ID;
+        if (!csvUrl.startsWith('http')) {
+            csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pub?output=csv`;
+        }
         fetch(csvUrl)
             .then(res => {
                 if (!res.ok) throw new Error("Spreadsheet response was not ok");
