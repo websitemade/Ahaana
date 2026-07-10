@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Column A: Title | Column B: Subtitle | Column C: URL | Column D: Icon
     // Share the Sheet: File -> Share -> Publish to web (Choose Entire Document and CSV)
     // Paste your Google Sheet ID here (the long string between /d/ and /edit in the URL)
-    const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSO4BS_4rHY2EAn69ryepTtLP4VPei-BazLiiezATCyGzs2yyEqKwhiuoiPxhJiEGZToFnL-u5SogQg/pub?output=csv';
+    const SPREADSHEET_ID = ''; // Disabled: I update it later
 
     // ----------------------------------------------------
     // 2. Default Data Config (Local Fallback)
@@ -28,42 +28,22 @@ document.addEventListener('DOMContentLoaded', () => {
             bio: "Digital Creator & Tech Evangelist.<br>Exploring the intersection of human creativity & machine learning.",
             avatar: "public/profilepic/ChatGPT Image Jul 9, 2026, 02_39_33 PM.png"
         },
-        links: [
-            {
-                title: "Custom LoRAs & AI Models",
-                subtitle: "Download my stable diffusion models & Llama weights",
-                url: "https://example.com/ai-models",
-                icon: "model"
-            },
-            {
-                title: "The Synthetic Edge Newsletter",
-                subtitle: "Weekly insights on generative AI, art & technology",
-                url: "https://example.com/newsletter",
-                icon: "newsletter"
-            },
-            {
-                title: "ArtStation Portfolio",
-                subtitle: "Browse synthetic environments & cyber-fashion renders",
-                url: "https://example.com/digital-art",
-                icon: "portfolio"
-            },
-            {
-                title: "Book a Virtual Keynote",
-                subtitle: "Schedule an AI synthesized speech or panel presentation",
-                url: "https://example.com/keynotes",
-                icon: "keynote"
-            }
-        ]
+        links: [] // Deleted all default link presets
     };
 
     // Load local data from LocalStorage or seed with defaults
     let appData = localStorage.getItem(STORAGE_KEY);
-    if (!appData || appData.includes('"name":"Aria Thorne"') || appData.includes('"name":"Aria Thorne V2"')) {
+    if (!appData || appData.includes('"name":"Aria Thorne"') || appData.includes('"name":"Aria Thorne V2"') || appData.includes('Custom LoRAs & AI Models')) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
         appData = defaultData;
     } else {
         try {
             appData = JSON.parse(appData);
+            // If it still contains the default link titles, clear the links array
+            if (appData.links && appData.links.some(l => l.title === 'Custom LoRAs & AI Models')) {
+                appData.links = [];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            }
         } catch (e) {
             console.error("Error parsing saved bio data", e);
             appData = defaultData;
@@ -273,4 +253,76 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
         }
     }
+
+    // ----------------------------------------------------
+    // 6. Visitor Bio Link Tracking
+    // ----------------------------------------------------
+    function trackVisit() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const igParam = urlParams.get('ig') || urlParams.get('ig_id') || urlParams.get('instagram') || urlParams.get('username') || urlParams.get('user');
+        const ref = urlParams.get('ref') || urlParams.get('utm_source') || urlParams.get('source') || urlParams.get('utm_medium');
+        const referrer = document.referrer || '';
+        
+        let isBioVisit = false;
+        let instagramId = '';
+        
+        // Check if there is an explicit Instagram ID parameter in the URL
+        if (igParam) {
+            isBioVisit = true;
+            instagramId = `@${igParam.replace(/^@/, '')}`;
+        } else if (ref) {
+            const rLower = ref.toLowerCase();
+            if (rLower === 'bio' || rLower === 'profile' || /ig|instagram|tiktok|twitter|x|linkedin/i.test(rLower)) {
+                isBioVisit = true;
+                instagramId = '@ig_bio_guest';
+            }
+        } else if (referrer) {
+            const refLower = referrer.toLowerCase();
+            if (/instagram\.com|instagram\.co/i.test(refLower)) {
+                isBioVisit = true;
+                instagramId = '@ig_bio_visitor';
+            } else if (/t\.co|twitter\.com|x\.com|tiktok\.com|linkedin\.com|lnkd\.in|facebook\.com/i.test(refLower)) {
+                isBioVisit = true;
+                instagramId = '@social_bio_visitor';
+            }
+        }
+        
+        if (isBioVisit) {
+            if (!instagramId) {
+                instagramId = '@guest';
+            }
+
+            const visitRecord = {
+                timestamp: new Date().toISOString(),
+                instagramId: instagramId
+            };
+
+            const VISIT_STORAGE_KEY = 'aria_visitors_log';
+            let visits = [];
+            try {
+                visits = JSON.parse(localStorage.getItem(VISIT_STORAGE_KEY)) || [];
+            } catch(e) {
+                visits = [];
+            }
+
+            // Prevent recording multiple hits for the same ID if they hit refresh within 5 seconds
+            const now = Date.now();
+            const isDuplicate = visits.some(v => {
+                const diff = now - new Date(v.timestamp).getTime();
+                return diff < 5000 && v.instagramId === visitRecord.instagramId;
+            });
+
+            if (!isDuplicate) {
+                visits.unshift(visitRecord);
+                if (visits.length > 100) {
+                    visits.pop();
+                }
+                localStorage.setItem(VISIT_STORAGE_KEY, JSON.stringify(visits));
+            }
+        }
+    }
+
+    // Run visitor tracking
+    trackVisit();
 });
+

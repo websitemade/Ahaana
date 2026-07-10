@@ -79,40 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
             bio: "Digital Creator & Tech Evangelist.<br>Exploring the intersection of human creativity & machine learning.",
             avatar: "public/profilepic/ChatGPT Image Jul 9, 2026, 02_39_33 PM.png"
         },
-
-        links: [
-            {
-                title: "Custom LoRAs & AI Models",
-                subtitle: "Download my stable diffusion models & Llama weights",
-                url: "https://example.com/ai-models",
-                icon: "model"
-            },
-            {
-                title: "The Synthetic Edge Newsletter",
-                subtitle: "Weekly insights on generative AI, art & technology",
-                url: "https://example.com/newsletter",
-                icon: "newsletter"
-            },
-            {
-                title: "ArtStation Portfolio",
-                subtitle: "Browse synthetic environments & cyber-fashion renders",
-                url: "https://example.com/digital-art",
-                icon: "portfolio"
-            },
-            {
-                title: "Book a Virtual Keynote",
-                subtitle: "Schedule an AI synthesized speech or panel presentation",
-                url: "https://example.com/keynotes",
-                icon: "keynote"
-            }
-        ]
+        links: [] // Deleted all default link presets
     };
 
     function initializeDashboardData() {
         let stored = localStorage.getItem(STORAGE_KEY);
-        if (stored && !stored.includes('"name":"Aria Thorne"') && !stored.includes('"name":"Aria Thorne V2"')) {
+        if (stored && !stored.includes('"name":"Aria Thorne"') && !stored.includes('"name":"Aria Thorne V2"') && !stored.includes('Custom LoRAs & AI Models')) {
             try {
                 appData = JSON.parse(stored);
+                // Clean old presets if they are still inside appData links array
+                if (appData.links && appData.links.some(l => l.title === 'Custom LoRAs & AI Models')) {
+                    appData.links = [];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+                }
             } catch (e) {
                 appData = defaultData;
             }
@@ -130,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         renderLinksList();
+        renderVisitorLog();
     }    // ----------------------------------------------------
     // 3. Links CRUD Manager
     // ----------------------------------------------------
@@ -308,5 +288,119 @@ document.addEventListener('DOMContentLoaded', () => {
                 toast.classList.remove('show');
             }, 3000);
         }
+    }
+
+    // ----------------------------------------------------
+    // 5. Visitor Log Controller & Analytics
+    // ----------------------------------------------------
+    const VISIT_STORAGE_KEY = 'aria_visitors_log';
+
+    function getVisits() {
+        let stored = localStorage.getItem(VISIT_STORAGE_KEY);
+        let visits = [];
+        try {
+            visits = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            visits = [];
+        }
+
+        // Seed with high quality mock data if not already done
+        if (localStorage.getItem('aria_visitors_seeded') !== 'true') {
+            const now = new Date();
+            const mockVisits = [
+                {
+                    timestamp: new Date(now.getTime() - 12 * 60 * 1000).toISOString(),
+                    instagramId: '@alex_creative'
+                },
+                {
+                    timestamp: new Date(now.getTime() - 52 * 60 * 1000).toISOString(),
+                    instagramId: '@sophie_dev'
+                },
+                {
+                    timestamp: new Date(now.getTime() - 150 * 60 * 1000).toISOString(),
+                    instagramId: '@cyber_designer'
+                },
+                {
+                    timestamp: new Date(now.getTime() - 360 * 60 * 1000).toISOString(),
+                    instagramId: '@neon_pulse'
+                },
+                {
+                    timestamp: new Date(now.getTime() - 25 * 60 * 60 * 1000).toISOString(),
+                    instagramId: '@digital_nomad'
+                }
+            ];
+
+            // Append mock visits to existing tracked visits
+            visits = visits.concat(mockVisits);
+            localStorage.setItem(VISIT_STORAGE_KEY, JSON.stringify(visits));
+            localStorage.setItem('aria_visitors_seeded', 'true');
+        }
+
+        return visits;
+    }
+
+    function renderVisitorLog() {
+        const visits = getVisits();
+        const visitorListEl = document.getElementById('admin-visitor-list');
+        const totalVisitsEl = document.getElementById('total-bio-visits');
+
+        if (!visitorListEl) return;
+
+        // Render stats
+        if (totalVisitsEl) {
+            totalVisitsEl.textContent = visits.length;
+        }
+
+        // Render list
+        visitorListEl.innerHTML = '';
+
+        if (visits.length === 0) {
+            visitorListEl.innerHTML = '<div class="no-links-msg">No visitor logs recorded.</div>';
+            return;
+        }
+
+        visits.forEach(visit => {
+            const row = document.createElement('div');
+            row.classList.add('admin-visitor-row');
+
+            // Format relative/short time
+            const timeStr = formatRelativeTime(new Date(visit.timestamp));
+
+            row.innerHTML = `
+                <div class="visitor-info">
+                    <span class="visitor-source" style="font-family: var(--font-heading); color: var(--color-accent-blue); font-weight: 600;">
+                        ${visit.instagramId || '@guest'}
+                    </span>
+                </div>
+                <div class="visitor-time">
+                    ${timeStr}
+                </div>
+            `;
+            visitorListEl.appendChild(row);
+        });
+    }
+
+    function formatRelativeTime(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHrs = Math.floor(diffMs / 3600000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHrs < 24) return `${diffHrs}h ago`;
+        
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Set up clear log event listener
+    const btnClearVisits = document.getElementById('btn-clear-visits');
+    if (btnClearVisits) {
+        btnClearVisits.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the entire visitor log?')) {
+                localStorage.setItem(VISIT_STORAGE_KEY, JSON.stringify([]));
+                renderVisitorLog();
+            }
+        });
     }
 });

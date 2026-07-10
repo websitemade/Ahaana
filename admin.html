@@ -82,7 +82,32 @@
                 </div>
             </section>
 
-        <main class="admin-main fade-in-delayed">
+            <!-- 2. Bio Link Visitors Log -->
+            <section class="admin-card">
+                <div class="admin-card-header">
+                    <h3>2. Bio Link Visitors Log</h3>
+                    <button type="button" id="btn-clear-visits" class="btn-clear-visits" title="Clear Visitor Log">
+                        Clear Log
+                    </button>
+                </div>
+                <div class="admin-card-body">
+                    <!-- Stats Grid -->
+                    <div class="visitor-stats">
+                        <div class="stat-box" style="grid-column: span 2;">
+                            <span id="total-bio-visits" class="stat-value">0</span>
+                            <span class="stat-label">Total Visitors Count</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Visitors Log Panel -->
+                    <div class="visitor-log-panel">
+                        <label>Recent Visitors</label>
+                        <div id="admin-visitor-list" class="admin-visitor-list">
+                            <!-- Populated dynamically via admin.js -->
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- 3. Links Management Grid -->
             <section class="admin-card">

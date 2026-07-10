@@ -1291,3 +1291,141 @@ body:hover .cursor-glow {
 .hidden {
     display: none !important;
 }
+
+/* Visitor Log & Stats Styling */
+.btn-clear-visits {
+    background: transparent;
+    border: 1px solid rgba(230, 0, 62, 0.3);
+    color: var(--color-accent-red);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-clear-visits:hover {
+    background: rgba(230, 0, 62, 0.05);
+    border-color: var(--color-accent-red);
+}
+
+.visitor-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-box {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: var(--grad-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.visitor-log-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.visitor-log-panel > label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.admin-visitor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    padding: 0.5rem;
+}
+
+.admin-visitor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    gap: 1rem;
+}
+
+.admin-visitor-row:hover {
+    border-color: rgba(0, 85, 255, 0.15);
+    box-shadow: var(--shadow-sm);
+}
+
+.visitor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    overflow: hidden;
+}
+
+.visitor-source {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.visitor-badge {
+    background: rgba(0, 136, 255, 0.08);
+    color: var(--color-accent-cyan);
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.visitor-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.visitor-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-align: right;
+}
+
