@@ -18,30 +18,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                               const DATA_URL = './data.json?cb=' + Date.now();
 
-        async function loadData() {
-                  try {
-                              const response = await fetch(DATA_URL);
-                              if (!response.ok) throw new Error('Network response was not ok');
-                              const serverData = await response.json();
-                              try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData)); } catch(e) {}
-                              return serverData;
-                  } catch (error) {
-                              console.warn('Could not load data.json, falling back to localStorage.', error);
-                              try {
-                                            const stored = localStorage.getItem(STORAGE_KEY);
-                                            if (stored) {
-                                                            const parsed = JSON.parse(stored);
-                                                            return parsed;
-                                            }
-                              } catch(e) {}
-                              return defaultData;
-                  }
-        }
-
-        (async () => {
-                  const data = await loadData();
-                  renderPage(data);
-        })();
+          async function loadData() {
+                      let localData = null;
+                      try {
+                                    const stored = localStorage.getItem(STORAGE_KEY);
+                                    if (stored) localData = JSON.parse(stored);
+                      } catch(e) {}
+                  
+                      try {
+                                    const response = await fetch(DATA_URL);
+                                    if (response.ok) {
+                                                    const serverData = await response.json();
+                                                    if (serverData && serverData.links && serverData.links.length > 0) {
+                                                                      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData)); } catch(e) {}
+                                                                      return serverData;
+                                                    }
+                                    }
+                      } catch (error) {
+                                    console.warn('Could not load data.json', error);
+                      }
+                  
+                      if (localData) {
+                                    return localData;
+                      }
+                      return defaultData;
+          }
+        
+          (async () => {
+                      const data = await loadData();
+                      renderPage(data);
+          })();
         
         function renderPage(data) {
                     if (data.profile) {
