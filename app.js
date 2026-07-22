@@ -18,30 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
                               const DATA_URL = './data.json?cb=' + Date.now();
 
-                              fetch(DATA_URL)
-            .then(res => {
-                            if (!res.ok) throw new Error('data.json not found');
-                            return res.json();
-            })
-            .then(serverData => {
-                            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData)); } catch(e) {}
-                            renderPage(serverData);
-            })
-            .catch(() => {
-                            console.warn('Could not load data.json, falling back to localStorage.');
-                            let appData = defaultData;
-                            try {
-                                                const stored = localStorage.getItem(STORAGE_KEY);
-                                                if (stored) {
-                                                                        const parsed = JSON.parse(stored);
-                                                                        if (!parsed.links || parsed.links.some(l => l.title === 'Custom LoRAs & AI Models')) {
-                                                                                                    parsed.links = [];
-                                                                        }
-                                                                        appData = parsed;
-                                                }
-                            } catch(e) { }
-                            renderPage(appData);
-            });
+        async function loadData() {
+                  try {
+                              const response = await fetch(DATA_URL);
+                              if (!response.ok) throw new Error('Network response was not ok');
+                              const serverData = await response.json();
+                              try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData)); } catch(e) {}
+                              return serverData;
+                  } catch (error) {
+                              console.warn('Could not load data.json, falling back to localStorage.', error);
+                              try {
+                                            const stored = localStorage.getItem(STORAGE_KEY);
+                                            if (stored) {
+                                                            const parsed = JSON.parse(stored);
+                                                            return parsed;
+                                            }
+                              } catch(e) {}
+                              return defaultData;
+                  }
+        }
+
+        (async () => {
+                  const data = await loadData();
+                  renderPage(data);
+        })();
+        
         function renderPage(data) {
                     if (data.profile) {
                                     document.getElementById('profile-avatar').src = data.profile.avatar || 'assets/avatar.png';
