@@ -1,1 +1,22 @@
-{"profile": {"name": "Heyahaana", "handle": "@heyahaana", "bio": "Digital Creator & Tech Evangelist.<br>Exploring the intersection of human creativity & machine learning.", "avatar": "public/profilepic/ChatGPT Image Jul 9, 2026, 02_39_33 PM.png", "links": [{"title": "Instagram", "subtitle": "Follow me @heyahaana", "url": "https://instagram.com/heyahaana", "icon": "generic", {"title": "My Portfolio", "subtitle": "Projects & collaborations", "url": "https://websitemade.github.io/Ahaana/", "icon": "portfolio"
+{
+    "profile": {
+          "name": "Heyahaana",
+          "handle": "@heyahaana",
+          "bio": "Digital Creator & Tech Evangelist.<br>Exploring the intersection of human creativity & machine learning.",
+          "avatar": "public/profilepic/ChatGPT Image Jul 9, 2026, 02_39_33 PM.png"
+    },
+    "links": [
+          {
+                  "title": "Instagram",
+                  "subtitle": "Follow me @heyahaana",
+                  "url": "https://instagram.com/heyahaana",
+                  "icon": "generic"
+          },
+          {
+                  "title": "My Portfolio",
+                  "subtitle": "Projects & collaborations",
+                  "url": "https://websitemade.github.io/Ahaana/",
+                  "icon": "portfolio"
+          }
+    ]
+}
